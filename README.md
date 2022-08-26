@@ -17,9 +17,9 @@ tiny-gzip <directory>
 ## Options
 
 ```
-- `input`: single file or non-empty directory
-- `-o` or `--output`: output path
-- '-f' or `--file`: specify the input is a file, in case there is a directory with the same name
+- 'input': single file or non-empty directory
+- '-o' or '--output': output path
+- '-f' or '--file': specify the input is a file, in case there is a directory with the same name
 ```
 
 ## Licence
