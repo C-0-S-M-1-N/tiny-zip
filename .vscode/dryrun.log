@@ -1,8 +1,0 @@
-make --dry-run --keep-going --print-directory
-make: Entering directory '/mnt/d/tiny-zip'
-mkdir -p bin
-gcc -c -std=c99 -O0 -pthread -Ilibs/zlib src/compresser.c -o bin/compresser.o
- 
-gcc bin/files.o bin/compresser.o bin/main.o -ldl -lm -lpthread -lz -o bin/tiny-gzip
-make: Leaving directory '/mnt/d/tiny-zip'
- 
