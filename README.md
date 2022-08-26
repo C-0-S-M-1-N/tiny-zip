@@ -1,9 +1,7 @@
 # tiny-gzip
 
 [![Stargazers][stars-shield]][stars-url]
-[![Forks][forks-shield]][forks-url]
 [![Contributors][contributors-shield]][contributors-url]
-[![Issues][issues-shield]][issues-url]
 [![GPLv3 License][license-shield]][license-url]
 
 A tiny compression program, similar to gzip.
@@ -28,3 +26,13 @@ tiny-gzip <directory>
 
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt) © [Stefan Asandei](https://www.stefan-asandei.cf)
 
+[contributors-shield]: https://img.shields.io/github/contributors/NikolaTesla13/tiny-gzip.svg?style=social
+[contributors-url]: https://github.com//NikolaTesla13/tiny-gzip/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks//NikolaTesla13/tiny-gzip.svg?style=social
+[forks-url]: https://github.com/NikolaTesla13/tiny-gzip/network/members
+[stars-shield]: https://img.shields.io/github/stars/NikolaTesla13/tiny-gzip.svg?style=social
+[stars-url]: https://github.com/NikolaTesla13/tiny-gzip/stargazers
+[issues-shield]: https://img.shields.io/github/issue/NikolaTesla13/tiny-gzip.svg?style=social
+[issues-url]: https://github.com/NikolaTesla13/tiny-gzip/issues
+[license-shield]: https://img.shields.io/github/license/NikolaTesla13/tiny-gzip.svg?style=social
+[license-url]: https://github.com/NikolaTesla13/tiny-gzip/blob/master/LICENSE
