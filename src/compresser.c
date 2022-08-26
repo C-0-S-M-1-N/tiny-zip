@@ -24,8 +24,7 @@ void compress_file(const char* input, const char* output) {
     }
     else {
         char compressed_buffer[256];
-        unsigned int magic_number = 0x69, version = 10, compression_type = Z_BEST_COMPRESSION;
-        unsigned int current_time = GET_TIME(), compressed_size, uncompressed_size;
+        unsigned int magic_number = 0x69, version = 10, compression_type = Z_BEST_COMPRESSION, compressed_size, uncompressed_size;
 
         z_stream defstream;
         defstream.zalloc = Z_NULL;
@@ -43,11 +42,11 @@ void compress_file(const char* input, const char* output) {
 
         FILE* output_file = fopen(output, "wb");
         
-        uncompressed_size = defstream.avail_in;
+        uncompressed_size = strlen(f_data);
         compressed_size = strlen(compressed_buffer);
-        const unsigned char header[] = { magic_number, version, compression_type, current_time, compressed_size, uncompressed_size };
+        const unsigned char header[] = { magic_number, version, compression_type, compressed_size, uncompressed_size };
 
-        fwrite(header, 6, 1, output_file);
+        fwrite(header, 5, 1, output_file);
         fwrite(compressed_buffer, strlen(compressed_buffer), 1, output_file);
 
         free(f_data);
@@ -63,15 +62,16 @@ void decompress_file(const char* input, const char* output) {
     size_t f_size;
     char* f_data = read_file(input, &err, &f_size);
 
-    if (err) {
+    if (err != FILE_OK) {
         printf("error opening the input file!\n");
         exit(-1);
     }
     else {
         char decompressed_buffer[2560000];
-        unsigned int magic_number = 0x69, version, compression_type;
-        unsigned int current_time, compressed_size, uncompressed_size;
+        unsigned int magic_number = 0x69, version = f_data[1], compression_type = f_data[2];
+        unsigned int compressed_size = f_data[3], uncompressed_size = f_data[4];
 
+        printf("version: %d\ncompressed size: %d\nuncompressed size: %d\n", version, compressed_size, uncompressed_size);
         ASSERT(f_data[0] == magic_number);
 
         z_stream infstream;
@@ -79,8 +79,8 @@ void decompress_file(const char* input, const char* output) {
         infstream.zfree = Z_NULL;
         infstream.opaque = Z_NULL;
 
-        infstream.avail_in = (uInt)(strlen(f_data)-6);
-        infstream.next_in = (Bytef*)(f_data+6);
+        infstream.avail_in = (uInt)(strlen(f_data)-5);
+        infstream.next_in = (Bytef*)(f_data+5);
         infstream.avail_out = (uInt)sizeof(decompressed_buffer);
         infstream.next_out = (Bytef*)decompressed_buffer;
         
