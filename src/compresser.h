@@ -4,4 +4,7 @@
 void compress_file(const char* input, const char* output);
 void compress_dir(const char* input, const char* output);
 
+void decompress_file(const char* input, const char* output);
+void decompress_dir(const char* input, const char* output);
+
 #endif
