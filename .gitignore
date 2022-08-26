@@ -1,2 +1,3 @@
 bin/*.o
 bin/tiny-gzip
+.vscode

@@ -1,8 +1,8 @@
 CC       = gcc
 DEBUGGER = gdb
 LINKER   = $(CC)
-CFLAGS   = -std=c99 -O0 -pthread
-LFLAGS   = -ldl -lm -lpthread
+CFLAGS   = -std=c99 -O0 -pthread -Ilibs/zlib
+LFLAGS   = -ldl -lm -lpthread -lz
 
 TARGET   = tiny-gzip
 SRC_DIR   = src
