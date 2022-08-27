@@ -22,7 +22,8 @@ void compress_file(const char* input, const char* output) {
     int ret, flush, size=0;
     unsigned have;
     z_stream strm;
-    unsigned char in[CHUNK], out[CHUNK];
+    unsigned char in[CHUNK], temp[CHUNK], out[CHUNK];
+    const unsigned char header[] = { 0x69, 0x0 };
 
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
@@ -42,21 +43,24 @@ void compress_file(const char* input, const char* output) {
         
         do {
             strm.avail_out = CHUNK;
-            strm.next_out = out;
+            strm.next_out = temp;
             ret = deflate(&strm, flush);
             ASSERT(ret != Z_STREAM_ERROR);
             have = CHUNK - strm.avail_out;
 
-            if(fwrite(out, 1, have, dest) != have || ferror(dest)) {
-                deflateEnd(&strm);
-                return;
+            for(int i=size, j=0; i<size+have; i++, j++) {
+                out[i] = temp[j];
             }
+            out[size+have] = '\0';
+
             size += have;
         } while(strm.avail_out == 0);
     } while(flush != Z_FINISH);
 
-    //printf("size: %d\n", size);
     deflateEnd(&strm);
+
+    fwrite(header, 1, 2, dest);
+    fwrite(out, 1, size, dest);
 
     fclose(source);
     fclose(dest);
@@ -67,8 +71,12 @@ void compress_dir(const char* input, const char* output) {
 }
 
 void decompress_file(const char* input, const char* output) {
-   FILE* source = fopen(input, "rb");
+    FILE* source = fopen(input, "rb");
     FILE* dest = fopen(output, "wb");
+
+    unsigned char header[2];
+    fread(header, 1, 2, source);
+    printf("magic number: %d\n", header[0]);
 
     int ret;
     unsigned have;
