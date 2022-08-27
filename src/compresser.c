@@ -122,8 +122,7 @@ void decompress_file(const char* input, const char* output) {
     fclose(source);
     fclose(dest);
 }
-// TODO: split everything in chunks https://github.com/madler/zlib/blob/master/examples/zpipe.c
-// atm it only works with files smaller than 256 chars
+
 void decompress_dir(const char* input, const char* output) {
 
 }
