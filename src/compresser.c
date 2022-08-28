@@ -22,7 +22,9 @@ void compress_file(const char* input, const char* output) {
     int ret, flush, size=0;
     unsigned have;
     z_stream strm;
-    unsigned char in[CHUNK], temp[CHUNK], out[CHUNK];
+    unsigned char temp[CHUNK];
+    unsigned char* in = malloc(1000 * CHUNK);
+    unsigned char* out = malloc(1000 * CHUNK);
     const unsigned char header[] = { 0x69, 0x0 };
 
     strm.zalloc = Z_NULL;
@@ -57,11 +59,13 @@ void compress_file(const char* input, const char* output) {
         } while(strm.avail_out == 0);
     } while(flush != Z_FINISH);
 
+    free(in);
     deflateEnd(&strm);
 
     fwrite(header, 1, 2, dest);
     fwrite(out, 1, size, dest);
 
+    free(out);
     fclose(source);
     fclose(dest);
 }
@@ -81,7 +85,8 @@ void decompress_file(const char* input, const char* output) {
     int ret;
     unsigned have;
     z_stream strm;
-    unsigned char in[CHUNK], out[CHUNK];
+    unsigned char* in = malloc(1000 * CHUNK);
+    unsigned char* out = malloc(1000 * CHUNK);
 
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
@@ -125,6 +130,8 @@ void decompress_file(const char* input, const char* output) {
         } while(strm.avail_out == 0);
     } while(ret != Z_STREAM_END);
 
+    free(in);
+    free(out);
     inflateEnd(&strm);
 
     fclose(source);
