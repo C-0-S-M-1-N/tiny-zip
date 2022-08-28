@@ -12,6 +12,7 @@
 #include "compresser.h"
 #include "files.h"
 #include "utils.h"
+#include "file_record.h"
 
 #define CHUNK 16384
 
@@ -19,13 +20,17 @@ void compress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");
     FILE* dest = fopen(output, "wb");
 
-    int ret, flush, size=0;
+    int ret, flush, size=0, old_size=0;
     unsigned have;
     z_stream strm;
     unsigned char temp[CHUNK];
     unsigned char* in = malloc(1000 * CHUNK);
-    unsigned char* out = malloc(1000 * CHUNK);
-    const unsigned char header[] = { 0x69, 0x0 };
+
+    FILERECORD record = {
+        .filename_size = strlen("a"),
+        .filename = "a",
+        .data = malloc(1000 * CHUNK)
+    };
 
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
@@ -42,6 +47,8 @@ void compress_file(const char* input, const char* output) {
         }
         flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
         strm.next_in = in;
+
+        old_size += strlen(in);
         
         do {
             strm.avail_out = CHUNK;
@@ -51,9 +58,9 @@ void compress_file(const char* input, const char* output) {
             have = CHUNK - strm.avail_out;
 
             for(int i=size, j=0; i<size+have; i++, j++) {
-                out[i] = temp[j];
+                record.data[i] = temp[j];
             }
-            out[size+have] = '\0';
+            record.data[size+have] = '\0';
 
             size += have;
         } while(strm.avail_out == 0);
@@ -61,11 +68,13 @@ void compress_file(const char* input, const char* output) {
 
     free(in);
     deflateEnd(&strm);
+    
+    record.uncompressed_size = old_size;
+    record.compressed_size = size;
 
-    fwrite(header, 1, 2, dest);
-    fwrite(out, 1, size, dest);
+    serialize_record(dest, &record);
 
-    free(out);
+    free(record.data);
     fclose(source);
     fclose(dest);
 }
@@ -78,9 +87,9 @@ void decompress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");
     FILE* dest = fopen(output, "wb");
 
-    unsigned char header[2];
-    fread(header, 1, 2, source);
-    printf("magic number: %d\n", header[0]);
+    unsigned char header[3];
+    fread(header, 1, sizeof(header), source);
+    printf("magic: %c%c, version: %d\n", header[0], header[1], header[2]);
 
     int ret;
     unsigned have;
