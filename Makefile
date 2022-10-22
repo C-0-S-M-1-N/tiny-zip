@@ -4,7 +4,7 @@ LINKER   = $(CC)
 CFLAGS   = -std=c99 -O0 -pthread -Ilibs/zlib
 LFLAGS   = -ldl -lm -lpthread -lz
 
-TARGET   = tiny-gzip
+TARGET    = tiny-zip
 SRC_DIR   = src
 BIN_DIR   = bin
 OBJ_DIR   = $(BIN_DIR)

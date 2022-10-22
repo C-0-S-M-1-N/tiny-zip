@@ -3,42 +3,48 @@
 
 #include <string.h>
 #include <linux/limits.h>
+#include <stdbool.h>
 
 #include "utils.h"
 #include "compresser.h"
+#include "decompresser.h"
 #include "files.h"
+
+char input_filename[PATH_MAX], output_filename[PATH_MAX];
+bool is_quiet, is_decompress;
+
+bool streq(const char* input, const char* op1, const char* op2) {
+	return strcmp(input, op1) == 0 || strcmp(input, op2) == 0;
+}
 
 int main(int argc, char* argv[]) {
 	ASSERT(argc > 1);
-	const char* input = argv[1];
-	char output[PATH_MAX], decompress = 0;
 
-	for(int i=2; i<argc; i++) {
-		if(strcmp("-o", argv[i]) == 0 || strcmp("--output", argv[i]) == 0) {
-			strcpy(output, argv[i+1]);
-		}
-
-		if(strcmp("-d", argv[i]) == 0) {
-			decompress = 1;
+	for(unsigned int i=1; i<argc; i++) {
+		if(streq(argv[i], "-q", "--quiet")) {
+			is_quiet = true;
+		} else if(streq(argv[i], "-d", "--decompress")) {
+			is_decompress = true;
+		} else if(streq(argv[i], "-o", "--output") && i+1 < argc) {
+			strncpy(output_filename, argv[i+1], PATH_MAX);
+			i++;
+			continue;
+		} else if(input_filename[0] == '\0' && argv[i][0] != '-') {
+			ASSERT(is_file(argv[i]));
+			strncpy(input_filename, argv[i], PATH_MAX);
 		}
 	}
 
-	if(output[0] == '\0') {
-		sprintf(output, "%s.tzip", input);
+	if(output_filename[0] == '\0') {
+		strcpy(output_filename, "file.tzip");
 	}
 
-	if(!decompress) {
-		if(is_file(input)) {
-			compress_file(input, output);
-		} else {
-			compress_dir(input, output);
-		}
+	ASSERT(input_filename[0] != '\0');
+
+	if(!is_decompress) {
+		compress_file(input_filename, output_filename);
 	} else {
-		if(is_file(input)) {
-			decompress_file(input, output);
-		} else {
-			decompress_dir(input, output);
-		}
+		decompress_file(input_filename, output_filename);
 	}
 
 	return 0;

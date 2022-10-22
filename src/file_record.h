@@ -1,6 +1,8 @@
 #ifndef FILE_RECORD_H
 #define FILE_RECORD_H
 
+#define CHUNK 16384
+
 typedef struct {
     unsigned int uncompressed_size;
     unsigned int compressed_size;

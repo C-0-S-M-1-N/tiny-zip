@@ -1,26 +1,49 @@
-# tiny-gzip
+# tiny-zip
 
 [![Stargazers][stars-shield]][stars-url]
 [![Contributors][contributors-shield]][contributors-url]
 [![GPLv3 License][license-shield]][license-url]
 
-A tiny compression program, similar to gzip.
+A tiny compression program, similar to zip.
 
-## Usage
-
-```
-tiny-gzip <filename>  # results in filename.tzip
-# or
-tiny-gzip <directory>
-```
-
-## Options
+## Example usages
 
 ```
-- 'input': single file or non-empty directory
-- '-o' or '--output': output path
-- '-f' or '--file': specify the input is a file, in case there is a directory with the same name
+$ tiny-zip ./tests/1.txt -o ./tests/rez.tzip
+[INFO] Compressed ./tests/1.txt
+[INFO] Serialized to ./tests/res.tzip
+
+$ tiny-zip ./tests/1.txt --output ./tests/rez.tzip
+[INFO] Compressed ./tests/1.txt
+[INFO] Saved to ./tests/res.tzip
+
+
+$ tiny-zip ./tests/1.txt -q
+# saved the compressed file as ./tests/1.tzip
+
+$ tiny-zip ./tests/1.txt --quiet
+
+$ tiny-zip -d ./tests/1.tzip
+[INFO] Decompressed ./tests/1.tzip
+[INFO] Saved to ./tests/1.txt
+
+$ tiny-zip --decompress ./tests/1.tzip -o ./tests/res.txt
+[INFO] Decompressed ./tests/1.tzip
+[INFO] Saved to ./tests/res.txt
 ```
+
+Quick testing:
+
+```
+tiny-zip ./tests/1.txt -o ./tests/res.tzip
+tiny-zip ./tests/res.tzip -o ./tests/res.txt -d
+```
+
+| option           | description                 |
+| ---------------- | --------------------------- |
+| -o, --output     | specify the output filename |
+| -q, --quiet      | no info logs                |
+| -d, --decompress | decompress a file           |
 
 ## Licence
 
@@ -36,3 +59,7 @@ tiny-gzip <directory>
 [issues-url]: https://github.com/NikolaTesla13/tiny-gzip/issues
 [license-shield]: https://img.shields.io/github/license/NikolaTesla13/tiny-gzip.svg?style=social
 [license-url]: https://github.com/NikolaTesla13/tiny-gzip/blob/master/LICENSE
+
+```
+
+```
