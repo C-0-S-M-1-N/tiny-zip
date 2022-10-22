@@ -59,7 +59,3 @@ tiny-zip ./tests/res.tzip -o ./tests/res.txt -d
 [issues-url]: https://github.com/NikolaTesla13/tiny-gzip/issues
 [license-shield]: https://img.shields.io/github/license/NikolaTesla13/tiny-gzip.svg?style=social
 [license-url]: https://github.com/NikolaTesla13/tiny-gzip/blob/master/LICENSE
-
-```
-
-```
