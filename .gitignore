@@ -1,4 +1,4 @@
 bin/*.o
-bin/tiny-gzip
+bin/tiny-zip
 .vscode
 *.tzip
