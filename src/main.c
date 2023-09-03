@@ -1,14 +1,14 @@
-#define _POSIX_C_SOURCE
-#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <string.h>
 #include <linux/limits.h>
 #include <stdbool.h>
 
-#include "utils.h"
-#include "compresser.h"
-#include "decompresser.h"
-#include "files.h"
+#include <utils.h>
+#include <compresser.h>
+#include <decompresser.h>
+#include <files.h>
 
 char input_filename[PATH_MAX], output_filename[PATH_MAX];
 bool is_quiet, is_decompress;
@@ -17,35 +17,67 @@ bool streq(const char* input, const char* op1, const char* op2) {
 	return strcmp(input, op1) == 0 || strcmp(input, op2) == 0;
 }
 
+unsigned GetFlags(const int argc, char* argv[]){ // update type if more than 8 flags
+	unsigned ret = 0;
+	for(int i = 0; i < argc; i++){
+		if(argv[i][0] == '-' && argv[i][1] != '-'){
+			for(int j = 2; argv[i][j]; j++){
+				switch(argv[i][j]){
+					case 'q': ret |= QUIET;	break;
+					case 'd': ret |= DECOMPRESS; break;
+					case 'o': ret |= OUTPUT; break;
+					default: fprintf(stderr, "Unknown flag `%c`\n", argv[i][j]); exit(EXIT_FAILURE);
+				}
+			}
+			if(!(ret & OUTPUT)) continue;
+			if(i+1 >= argc){
+				fprintf(stderr, "No output file provided after -o flag\n"); 
+				exit(EXIT_FAILURE);
+			}
+			snprintf(output_filename, PATH_MAX, "%s", argv[i+1]);
+		} else if(argv[i][0] == '-' && argv[i][1] == '-'){
+			if(!strcmp(argv[i]+2, "quiet")) ret |= QUIET;
+			else if(!strcmp(argv[i]+2, "decompress")) ret |= DECOMPRESS;
+			else if(!strcmp(argv[i]+2, "output")){
+				ret |= OUTPUT;
+												   
+				if(i+1 >= argc){
+					printf("No output file provided after -o flag\n"); 
+					exit(EXIT_FAILURE);
+				}
+				snprintf(output_filename, PATH_MAX, "%s", argv[i+1]);
+				
+			} else {
+				fprintf(stderr, "Unknown flag `%s`", argv[i]);
+			}
+		} else if(!(ret & INPUT)){
+			ret |= INPUT;
+			snprintf(input_filename, PATH_MAX, "%s", argv[i]);
+		} else {
+			fprintf(stderr, "W: Unknown garbage alongside command arguments `%s`\n", argv[i]);
+		}
+	}
+	return ret;
+}
+
 int main(int argc, char* argv[]) {
 	ASSERT(argc > 1);
 
-	for(unsigned int i=1; i<argc; i++) {
-		if(streq(argv[i], "-q", "--quiet")) {
-			is_quiet = true;
-		} else if(streq(argv[i], "-d", "--decompress")) {
-			is_decompress = true;
-		} else if(streq(argv[i], "-o", "--output") && i+1 < argc) {
-			strncpy(output_filename, argv[i+1], PATH_MAX);
-			i++;
-			continue;
-		} else if(input_filename[0] == '\0' && argv[i][0] != '-') {
-			ASSERT(is_file(argv[i]));
-			strncpy(input_filename, argv[i], PATH_MAX);
-		}
-	}
+	unsigned flags = GetFlags(argc, argv);
+	
+	if(flags & QUIET) is_quiet = 1;
 
 	if(output_filename[0] == '\0') {
-		strcpy(output_filename, "file.tzip");
+		snprintf(output_filename, MAX_INPUT, "file.tzip");
 	}
 
 	ASSERT(input_filename[0] != '\0');
-
-	if(!is_decompress) {
-		compress_file(input_filename, output_filename);
-	} else {
+	
+	if(flags & DECOMPRESS){
 		decompress_file(input_filename, output_filename);
+		return EXIT_SUCCESS;
 	}
+	compress_file(input_filename, output_filename);
 
-	return 0;
+	return EXIT_SUCCESS;
 }

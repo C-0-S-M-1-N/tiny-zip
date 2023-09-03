@@ -1,5 +1,6 @@
 #ifndef FILE_RECORD_H
 #define FILE_RECORD_H
+#include <stdio.h>
 
 #define CHUNK 16384
 

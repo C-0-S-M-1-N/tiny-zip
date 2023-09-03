@@ -1,7 +1,8 @@
 CC       = gcc
 DEBUGGER = gdb
 LINKER   = $(CC)
-CFLAGS   = -std=c99 -O0 -pthread -Ilibs/zlib
+CFLAGS   = -std=c99 -O0 -pthread \
+		   -Ilibs/zlib -I./include \
 LFLAGS   = -ldl -lm -lpthread -lz
 
 TARGET    = tiny-zip

@@ -3,3 +3,4 @@ bin/tiny-zip
 bin/tiny-gzip
 .vscode
 *.tzip
+.cache

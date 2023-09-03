@@ -1,5 +1,6 @@
 #ifndef FILES_H
 #define FILES_H
+#include <stddef.h>
 
 typedef enum { 
     FILE_OK, FILE_NOT_EXIST, FILE_TOO_LARGE, FILE_READ_ERROR 

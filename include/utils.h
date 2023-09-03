@@ -9,4 +9,10 @@
 
 #define NOW() (unsigned long)time(NULL)
 
+// flags
+#define QUIET 1 << 1
+#define DECOMPRESS 1 << 2
+#define OUTPUT 1 << 3 // yes even this
+#define INPUT 1 << 4
+
 #endif
