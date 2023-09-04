@@ -1,18 +1,18 @@
-#define _POSIX_C_SOURCE
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/mman.h>
 
 #include <zlib.h>
 
-#include "compresser.h"
-#include "files.h"
-#include "utils.h"
-#include "file_record.h"
+#include <include/files.h>
+#include <include/utils.h>
+#include <include/file_record.h>
+#include <include/decompresser.h>
+
+extern bool is_quiet;
 
 void decompress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");
@@ -21,6 +21,10 @@ void decompress_file(const char* input, const char* output) {
     unsigned char header[3];
     fread(header, 1, sizeof(header), source);
     printf("magic: %c%c, version: %d\n", header[0], header[1], header[2]);
+
+	if(!is_quiet){
+		printf("deflating %s. . .\n", input);
+	}
 
     int ret;
     unsigned have;
@@ -35,6 +39,7 @@ void decompress_file(const char* input, const char* output) {
     strm.next_in = Z_NULL;
 
     ret = inflateInit(&strm);
+
     ASSERT(ret == Z_OK);
 
     do {
