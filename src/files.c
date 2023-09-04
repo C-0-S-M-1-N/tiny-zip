@@ -1,13 +1,10 @@
-#define _POSIX_C_SOURCE
-#define _GNU_SOURCE
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <files.h>
+#include <include/files.h>
 
 int is_file(const char* path) {
     struct stat path_stat;

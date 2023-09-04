@@ -2,7 +2,7 @@ CC       = gcc
 DEBUGGER = gdb
 LINKER   = $(CC)
 CFLAGS   = -std=c99 -O0 -pthread \
-		   -Ilibs/zlib -I./include \
+		   -Ilibs/zlib -I./ \
 		   -D_POSIX_C_SOURCE -D_GNU_SOURCE \
 		   -g
 LFLAGS   = -ldl -lm -lpthread -lz
@@ -15,7 +15,7 @@ OBJ_DIR   = $(BIN_DIR)
 SRC      = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*/*.c)
 OBJ      = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-build: $(BIN_DIR) $(BIN_DIR)/$(TARGET)
+build: makeDateAndTimeTarget $(BIN_DIR) $(BIN_DIR)/$(TARGET)
 
 $(BIN_DIR):
 	mkdir -p $@
@@ -39,4 +39,7 @@ clean:
 remove: clean
 	rm -f $(BIN_DIR)/$(TARGET)
 
-.PHONY: build run debug clean remove
+makeDateAndTimeTarget:
+	./predef.sh
+
+.PHONY: build run debug clean remove makeDateAndTimeTarget

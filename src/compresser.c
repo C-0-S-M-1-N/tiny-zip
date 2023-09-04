@@ -1,6 +1,3 @@
-#define _POSIX_C_SOURCE
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -10,10 +7,10 @@
 
 #include <zlib.h>
 
-#include <files.h>
-#include <utils.h>
-#include <file_record.h>
-#include <compresser.h>
+#include <include/files.h>
+#include <include/utils.h>
+#include <include/file_record.h>
+#include <include/compresser.h>
 
 void compress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");

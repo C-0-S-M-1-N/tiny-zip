@@ -1,6 +1,4 @@
-bin/*.o
-bin/tiny-zip
-bin/tiny-gzip
+bin
 .vscode
 *.tzip
 .cache

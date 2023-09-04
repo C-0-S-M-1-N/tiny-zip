@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#include "file_record.h"
-#include "utils.h"
+#include <include/file_record.h>
+#include <include/utils.h>
 
 void serialize_record(FILE* dest, FILERECORD* record) {
     ASSERT(dest != NULL);

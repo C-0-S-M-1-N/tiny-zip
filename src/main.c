@@ -5,10 +5,11 @@
 #include <linux/limits.h>
 #include <stdbool.h>
 
-#include <utils.h>
-#include <compresser.h>
-#include <decompresser.h>
-#include <files.h>
+#include <include/utils.h>
+#include <include/compresser.h>
+#include <include/decompresser.h>
+#include <include/files.h>
+#include <include/time_and_date_proc.h>
 
 char input_filename[PATH_MAX], output_filename[PATH_MAX];
 bool is_quiet;
@@ -17,6 +18,16 @@ bool streq(const char* input, const char* op1, const char* op2) {
 	return strcmp(input, op1) == 0 || strcmp(input, op2) == 0;
 }
 
+void PrintVersion(){
+	printf(
+		"O----------------------------------------------O\n"
+		"|                  Tiny-Zip v0.1               |\n"
+		"|                                              |\n"
+		"| Compiled on " DATE_TIME " |\n"
+		"O----------------------------------------------O\n\n"
+					);
+	exit(EXIT_SUCCESS);
+}
 
 unsigned GetFlags(const int argc, char* argv[]){
 	unsigned ret = 0;
@@ -39,6 +50,7 @@ unsigned GetFlags(const int argc, char* argv[]){
 				if(!strcmp(argv[i]+j+1, "output")) ret |= OUTPUT;
 				else if(!strcmp(argv[i]+j+1, "quiet")) ret |= QUIET;
 				else if(!strcmp(argv[i]+j+1, "decompress")) ret |= DECOMPRESS;
+				else if(!strcmp(argv[i]+j+1, "version")) PrintVersion();
 				else {fprintf(stderr, "E: Unknown flag `%s`\n", argv[i]); exit(EXIT_FAILURE);}
 				break;
 			}
@@ -46,6 +58,7 @@ unsigned GetFlags(const int argc, char* argv[]){
 			case 'o': ret |= OUTPUT; 		break;
 			case 'q': ret |= QUIET;  		break;
 			case 'd': ret |= DECOMPRESS; 	break;
+			case 'v': PrintVersion();
 			default: fprintf(stderr, "E: Unknown flag `-%c`\n", argv[i][j]); 
 					 exit(EXIT_FAILURE); 	break;
 			}
