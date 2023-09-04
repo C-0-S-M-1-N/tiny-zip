@@ -5,14 +5,15 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/mman.h>
 
 #include <zlib.h>
 
-#include "compresser.h"
-#include "files.h"
-#include "utils.h"
-#include "file_record.h"
+#include <files.h>
+#include <utils.h>
+#include <file_record.h>
+#include <compresser.h>
 
 void compress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");
