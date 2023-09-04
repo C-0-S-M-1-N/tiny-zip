@@ -3,7 +3,8 @@ DEBUGGER = gdb
 LINKER   = $(CC)
 CFLAGS   = -std=c99 -O0 -pthread \
 		   -Ilibs/zlib -I./include \
-		   -D_POSIX_C_SOURCE -D_GNU_SOURCE
+		   -D_POSIX_C_SOURCE -D_GNU_SOURCE \
+		   -g
 LFLAGS   = -ldl -lm -lpthread -lz
 
 TARGET    = tiny-zip

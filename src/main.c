@@ -11,50 +11,44 @@
 #include <files.h>
 
 char input_filename[PATH_MAX], output_filename[PATH_MAX];
-bool is_quiet, is_decompress;
+bool is_quiet;
 
 bool streq(const char* input, const char* op1, const char* op2) {
 	return strcmp(input, op1) == 0 || strcmp(input, op2) == 0;
 }
 
-unsigned GetFlags(const int argc, char* argv[]){ // update type if more than 8 flags
+
+unsigned GetFlags(const int argc, char* argv[]){
 	unsigned ret = 0;
-	for(int i = 0; i < argc; i++){
-		if(argv[i][0] == '-' && argv[i][1] != '-'){
-			for(int j = 2; argv[i][j]; j++){
-				switch(argv[i][j]){
-					case 'q': ret |= QUIET;	break;
-					case 'd': ret |= DECOMPRESS; break;
-					case 'o': ret |= OUTPUT; break;
-					default: fprintf(stderr, "Unknown flag `%c`\n", argv[i][j]); exit(EXIT_FAILURE);
-				}
-			}
-			if(!(ret & OUTPUT)) continue;
-			if(i+1 >= argc){
-				fprintf(stderr, "No output file provided after -o flag\n"); 
-				exit(EXIT_FAILURE);
-			}
-			snprintf(output_filename, PATH_MAX, "%s", argv[i+1]);
-		} else if(argv[i][0] == '-' && argv[i][1] == '-'){
-			if(!strcmp(argv[i]+2, "quiet")) ret |= QUIET;
-			else if(!strcmp(argv[i]+2, "decompress")) ret |= DECOMPRESS;
-			else if(!strcmp(argv[i]+2, "output")){
-				ret |= OUTPUT;
-												   
-				if(i+1 >= argc){
-					printf("No output file provided after -o flag\n"); 
-					exit(EXIT_FAILURE);
-				}
-				snprintf(output_filename, PATH_MAX, "%s", argv[i+1]);
-				
+	for(int i = 1; i < argc; i++){
+		if(argv[i][0] != '-'){
+			if(ret & OUTPUT){
+				ret ^= OUTPUT;
+				snprintf(output_filename, MAX_INPUT, "%s", argv[i]);
+			} else if(!(ret & INPUT)){
+				ret |= INPUT;
+				snprintf(input_filename, MAX_INPUT, "%s", argv[i]);
 			} else {
-				fprintf(stderr, "Unknown flag `%s`", argv[i]);
+				fprintf(stderr, "W: Unknown garbage value `%s`\n", argv[i]);
 			}
-		} else if(!(ret & INPUT)){
-			ret |= INPUT;
-			snprintf(input_filename, PATH_MAX, "%s", argv[i]);
-		} else {
-			fprintf(stderr, "W: Unknown garbage alongside command arguments `%s`\n", argv[i]);
+			continue;
+		}
+		
+		for(int j = 1; argv[i][j]; j++){
+			if(argv[i][j] == '-'){
+				if(!strcmp(argv[i]+j+1, "output")) ret |= OUTPUT;
+				else if(!strcmp(argv[i]+j+1, "quiet")) ret |= QUIET;
+				else if(!strcmp(argv[i]+j+1, "decompress")) ret |= DECOMPRESS;
+				else {fprintf(stderr, "E: Unknown flag `%s`\n", argv[i]); exit(EXIT_FAILURE);}
+				break;
+			}
+			switch(argv[i][j]){
+			case 'o': ret |= OUTPUT; 		break;
+			case 'q': ret |= QUIET;  		break;
+			case 'd': ret |= DECOMPRESS; 	break;
+			default: fprintf(stderr, "E: Unknown flag `-%c`\n", argv[i][j]); 
+					 exit(EXIT_FAILURE); 	break;
+			}
 		}
 	}
 	return ret;
@@ -66,12 +60,16 @@ int main(int argc, char* argv[]) {
 	unsigned flags = GetFlags(argc, argv);
 	
 	if(flags & QUIET) is_quiet = 1;
-
+// 	printf("%hx", (unsigned short)flags);
+	fprintf(stderr, "inp: %s\n out: %s\n", input_filename, output_filename);
 	if(output_filename[0] == '\0') {
 		snprintf(output_filename, MAX_INPUT, "file.tzip");
 	}
 
-	ASSERT(input_filename[0] != '\0');
+	if(!(flags & INPUT)){
+		fprintf(stderr, "E: no input file\n");
+		return EXIT_FAILURE;
+	}
 	
 	if(flags & DECOMPRESS){
 		decompress_file(input_filename, output_filename);

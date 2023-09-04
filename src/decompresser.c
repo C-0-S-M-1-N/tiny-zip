@@ -9,10 +9,10 @@
 
 #include <zlib.h>
 
-#include "compresser.h"
-#include "files.h"
-#include "utils.h"
-#include "file_record.h"
+#include <compresser.h>
+#include <files.h>
+#include <utils.h>
+#include <file_record.h>
 
 void decompress_file(const char* input, const char* output) {
     FILE* source = fopen(input, "rb");
