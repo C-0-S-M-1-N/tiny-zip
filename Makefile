@@ -1,45 +1,52 @@
-CC       = gcc
-DEBUGGER = gdb
-LINKER   = $(CC)
-CFLAGS   = -std=c99 -O0 -pthread \
+CC       := gcc
+DEBUGGER := gdb
+LD 		 := gcc
+CFLAGS   := -c -pthread \
 		   -Ilibs/zlib -I./ \
-		   -D_POSIX_C_SOURCE -D_GNU_SOURCE \
-		   -g
-LFLAGS   = -ldl -lm -lpthread -lz
+		   -D_POSIX_C_SOURCE -D_GNU_SOURCE
+CDEBUG   := -O0 -g
+CRELEASE := -O3 
 
-TARGET    = tiny-zip
-SRC_DIR   = src
-BIN_DIR   = bin
-OBJ_DIR   = $(BIN_DIR)
+LFLAGS   := -ldl -lm -lpthread -lz
 
-SRC      = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*/*.c)
-OBJ      = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+SRC_DIR  := ./src
+BIN_DIR  := ./bin # Anxiety kicks in if it not relative path :')
+OBJ_DIR  := ./obj
+TARGET   := ./bin/tiny-zip
 
-build: makeDateAndTimeTarget $(BIN_DIR) $(BIN_DIR)/$(TARGET)
+SRC 	 := $(shell find $(SRC_DIR) -name '*.c')
+OBJ      := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.c.o,$(filter %c,$(SRC)))
 
+## FIlE RELATED MAKE
+
+$(TARGET): $(OBJ) | $(BIN_DIR)
+	$(LD) $^ -o $@ $(LFLAGS)
+
+$(OBJ_DIR)/%.c.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $^ -o $@ 
+
+$(OBJ_DIR):
+	mkdir -p $@
 $(BIN_DIR):
 	mkdir -p $@
 
-$(OBJ): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
-	@mkdir -p $(@D)
-	$(CC) -c $(CFLAGS) $< -o $@
+## NON FILE MAKE
+.PHONY: all build setTimeAndDate debug release clean
 
-$(BIN_DIR)/$(TARGET): $(OBJ)
-	$(LINKER) $(OBJ) $(LFLAGS) -o $@
+clean: 
+	rm -rfv $(OBJ_DIR)
+	rm -rfv $(BIN_DIR)
 
-run: build
-	./$(BIN_DIR)/$(TARGET)
+all: debug
 
-debug: build
-	$(DEBUGGER) $(BIN_DIR)/$(TARGET)
+build: setTimeAndDate $(TARGET)
 
-clean:
-	rm -f $(OBJ)
-
-remove: clean
-	rm -f $(BIN_DIR)/$(TARGET)
-
-makeDateAndTimeTarget:
+setTimeAndDate:
 	./predef.sh
 
-.PHONY: build run debug clean remove makeDateAndTimeTarget
+debug: CFLAGS += $(CDEBUG)
+debug: build
+
+release: CFLAGS += $(CRELEASE)
+release: build
+
